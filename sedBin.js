@@ -3,6 +3,19 @@ const yargs = require('yargs');
 const fs = require('fs');
 
 const argv = yargs
+  .usage('Usage: $0 [options] <cmd>')
+  .command('$0 <regex> <path..>', '', (yargs) => {
+    yargs
+      .positional('regex', {
+        describe: 'Regular expression to evaluate',
+        type: 'string',
+        conflicts: 'e'
+      })
+      .positional('path', {
+        describe: 'File to be processed',
+        type: 'string',
+      });
+  })
   .options({
     expression: {
       describe: 'Regex to be executed',
@@ -32,36 +45,31 @@ const argv = yargs
     },
     file: {
       describe:
-        'You can specified a file path to save the output of the evaluation result',
-      array: false,
+        'You can specified a file path commands',
+      array: true,
       alias: 'f',
       demandCommand: false,
       nargs: 1,
       type: 'string',
     },
   })
-  .demandCommand(1, 1)
-  .help()
-  .alias('help', 'h').argv;
+  .demandCommand(1, 2)
+  .argv;
+
+console.log(argv);
 
 
-if (validateRegex(argv._[0]) && validatePath(argv._[1])) {
-    executeExpression(argv._[0]);
-} 
+if (validateRegex(argv.regex) && validatePath(argv.path[0])) {
+  executeExpression(argv.regex,argv.path[0]);
+}
 
 function validateRegex(expression) {
-    if (expression!==undefined) return true;
+  if (expression !== undefined) return true;
 }
 
 function validatePath(filePath) {
-    if (filePath!==undefined) return true;
+  if (filePath !== undefined) return true;
 }
 
-function executeExpression(expression) {
-    let sfile = fs.createReadStream(argv._[1]);
-    
-    sfile.on('data', buff => {
-        console.log(buff.toString());
-    });
-}
+
 
