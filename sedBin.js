@@ -9,7 +9,7 @@ const argv = yargs
       .positional('regex', {
         describe: 'Regular expression to evaluate',
         type: 'string',
-        conflicts: 'e'
+        conflicts: 'e',
       })
       .positional('path', {
         describe: 'File to be processed',
@@ -44,8 +44,7 @@ const argv = yargs
       default: false,
     },
     file: {
-      describe:
-        'You can specified a file path commands',
+      describe: 'You can specified a file path commands',
       array: true,
       alias: 'f',
       demandCommand: false,
@@ -53,23 +52,7 @@ const argv = yargs
       type: 'string',
     },
   })
-  .demandCommand(1, 2)
-  .argv;
+  // . check to be implemented
+  .demandCommand(1, 2).argv;
 
 console.log(argv);
-
-
-if (validateRegex(argv.regex) && validatePath(argv.path[0])) {
-  executeExpression(argv.regex,argv.path[0]);
-}
-
-function validateRegex(expression) {
-  if (expression !== undefined) return true;
-}
-
-function validatePath(filePath) {
-  if (filePath !== undefined) return true;
-}
-
-
-
