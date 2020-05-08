@@ -113,12 +113,3 @@ if (argv.file !== undefined) {
   cmd.executeExpression(arrayRegex, argv.path, flags);
 }   
 
-// moved to cmd.js , now we check them just before execution
-
-/*   .check((yargs) => {
-    if (regexVal.validateCMD(yargs.regex)) {
-      return true;
-    }
-    throw new Error('Some regex seems to be wrong, give them a check ;) ');
-  })
-  */

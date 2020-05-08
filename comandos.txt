@@ -1,2 +1,0 @@
-s/c/FF/g
-s/a/KK/w nuevo

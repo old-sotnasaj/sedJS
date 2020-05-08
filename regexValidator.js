@@ -20,7 +20,7 @@ function validateCMD(expression) {
     else if (isOK.groups.flags.length > 0) valid = uniqueChars(isOK.groups.flags)
     // else if(wFlag && isOK.groups.file === ' ') valid =  false; instead we use a default bak.up file
   }
-  return valid;;
+  return valid;
 }
 
 function uniqueChars(chars) {
