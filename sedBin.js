@@ -3,9 +3,9 @@ const yargs = require('yargs');
 const fs = require('fs');
 const rl = require('readline');
 const fileVal = require('./fileValidator');
-const regexVal = require('./regexValidator');
 const cmd = require('./cmd');
 
+// export.command ¿? export.handler ¿? --read to improve
 const argv = yargs
   .usage('Usage: $0 [options] <cmd>')
   .options({
@@ -65,24 +65,6 @@ const argv = yargs
     throw new Error('Some files seems to be wrong, give them a check ;) ');
   })
   .check((yargs) => {
-    if (regexVal.validateCMD(yargs.regex)) {
-      return true;
-    }
-    throw new Error('Some regex seems to be wrong, give them a check ;) ');
-  })
-  .check((yargs) => {
-    if (yargs.e !== undefined) {
-      let arr = [...yargs.e];
-      if (regexVal.validateMulCMD(arr)) {
-        return true;
-      }
-      throw new Error(
-        'Some regex with -e seems to be wrong, give them a check ;) '
-      );
-    }
-    return true;
-  })
-  .check((yargs) => {
     if (yargs.f === undefined) {
       return true;
     } else {
@@ -103,6 +85,9 @@ let flags = {
   f: argv.file
 }
 
+// By now whe send the [] ready, it is suposed to change
+// Executed when -f , meaning that a file with commands is provided
+// Also the first positional argument is overrided but required(*Behaviour to be fix)
 if (argv.file !== undefined) {
   let commandsFF = [];
   let lineReader = rl.createInterface({
@@ -114,10 +99,17 @@ if (argv.file !== undefined) {
   lineReader.on('close', () => {
     cmd.executeExpression(commandsFF, argv.path,flags);
   });
-} else if (argv.expression !== undefined) {
+} 
+// Executed when -e argument is provided (or multiple)
+// Also the first positional argument is overrided but required (*Behaviour to be fix)
+  else if (argv.expression !== undefined) {
   let arrayRegex = [...argv.e];
   cmd.executeExpression(arrayRegex, argv.path, flags);
-} else {
+} 
+
+// if both a and b are not provided, 
+  else {
   let arrayRegex = [argv.regex];
   cmd.executeExpression(arrayRegex, argv.path, flags);
-}
+}   
+
