@@ -49,12 +49,19 @@ function executeExpression(sedCMDS, file, options) {
     }
     if (!options.n) {
       console.log(patternSpace); // we print every time....but we save once
-      stringPipe += patternSpace + '\n';
+      if(match){
+        stringPipe += patternSpace + '\n';
+      }
+      if (printDemand && match) {
+        console.log(patternSpace); // we print every time....but we save once
+        stringPipe += patternSpace + '\n';
+      }
+    } else {
+      if(match){
+        stringPipe += patternSpace + '\n';
+      }
     }
-    if (printDemand && match) {
-      console.log(patternSpace); // we print every time....but we save once
-      stringPipe += patternSpace + '\n';
-    }
+    
   });
 
   lineReader.on('close', () => {
