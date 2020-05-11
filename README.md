@@ -25,4 +25,4 @@ sedJS -f comandos.txt -e 's/a/XYZ/' file.txt --> apply f and e commands
 
 using w flag, the content on the right
  side of w will be the name of the file,
- if not provided one is taken by default bak.bak
+ if not provided one is taken by default bak.up
