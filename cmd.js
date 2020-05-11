@@ -1,5 +1,6 @@
 const fs = require('fs');
 const groupsExp = require('./regexValidator').groupsExp;
+const valCMD = require('./regexValidator').validateCMD;
 const fileMngr = require('./fileValidator');
 const rl = require('readline');
 const backUpFile = 'file.bak';
@@ -18,6 +19,14 @@ function executeExpression(sedCMDS, file, options) {
     patternSpace = line.toString(); // Fill patterspace with original content
 
     for (let cmd of sedCMDS) {
+
+      if (!valCMD(cmd)) {
+        //throw new Error('Some of the commands seems to be wrong --> '+cmd+' <--');
+        // ----> just for avoid the big output of throw
+        console.log('Some of the commands seems to be wrong --> '+cmd+' <--');
+        process.exit(); 
+      };
+
       match = false; //reset match every loop
       command = groupsExp.exec(cmd); // get named groups of Regex
       // Generate the equivalent command to be applied
@@ -28,21 +37,23 @@ function executeExpression(sedCMDS, file, options) {
       //respective replacement of the content
       patternSpace = patternSpace.replace(replaceCMD, command.groups.new);
 
+      // checks for W flag
       if (/(.*w.*)/.test(command.groups.flags)) {
         writeToFile = true;
-        if (command.groups.file !== undefined && command.groups.file!=='') {
-          lastWFlagFile =  command.groups.file;
+        if (command.groups.file != undefined) {
+          defualtWFlagFile = command.groups.file;
+          defualtWFlagFile =  defualtWFlagFile.replace(/ /g,''); // we dont want white
         }
       } 
 
     }
     if (!options.n && match) {
-      console.log(patternSpace);
-      if (options.i) stringPipe += patternSpace + '\n';
+      console.log(patternSpace); // we print every time....but we save once
+      stringPipe += patternSpace + '\n';
     }
     if (printDemand && match) {
-      console.log(patternSpace);
-      if (options.i) stringPipe += patternSpace + '\n';
+      console.log(patternSpace);// we print every time....but we save once
+      stringPipe += patternSpace + '\n';
     }
   });
 

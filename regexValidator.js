@@ -16,9 +16,9 @@ function validateCMD(expression) {
   let valid = false;
   let isOK = expression.match(checkExp);
   if (isOK !== null) {
-    if (isOK.groups.flags.length > 0) {
-      valid = uniqueChars(isOK.groups.flags);
-    } else if (isOK.groups.file !== '' && !wFlag) valid = false;
+    if(isOK.groups.flags.length === 0) valid = true;
+    else if (isOK.groups.flags.length > 0) valid = uniqueChars(isOK.groups.flags)
+    // else if(wFlag && isOK.groups.file === ' ') valid =  false; instead we use a default bak.up file
   }
   return valid;
 }
@@ -45,7 +45,4 @@ function uniqueChars(chars) {
   }
   return true;
 }
-
-
-module.exports = { validateCMD, validateMulCMD, groupsExp };
-
+module.exports = { validateCMD, groupsExp };
