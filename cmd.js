@@ -7,7 +7,7 @@ const backUpFile = 'file.bak';
 
 function executeExpression(sedCMDS, file, options) {
   let patternSpace; // patternSpace .....
-  let defualtWFlagFile = 'bak.up';// w flag file
+  let defualtWFlagFile = 'bak.up'; // w flag file
   let writeToFile = false; // w flag
   let printDemand = false; // By p flag
   let match = false;
@@ -19,13 +19,14 @@ function executeExpression(sedCMDS, file, options) {
     patternSpace = line.toString(); // Fill patterspace with original content
 
     for (let cmd of sedCMDS) {
-
       if (!valCMD(cmd)) {
         //throw new Error('Some of the commands seems to be wrong --> '+cmd+' <--');
         // ----> just for avoid the big output of throw
-        console.log('Some of the commands seems to be wrong --> '+cmd+' <--');
-        process.exit(); 
-      };
+        console.log(
+          'Some of the commands seems to be wrong --> ' + cmd + ' <--'
+        );
+        process.exit();
+      }
 
       match = false; //reset match every loop
       command = groupsExp.exec(cmd); // get named groups of Regex
@@ -40,25 +41,24 @@ function executeExpression(sedCMDS, file, options) {
       // checks for W flag
       if (/(.*w.*)/.test(command.groups.flags)) {
         writeToFile = true;
-        if (command.groups.file != undefined) {
+        if (command.groups.file != undefined && /\S/.test(command.groups.file)) {
           defualtWFlagFile = command.groups.file;
-          defualtWFlagFile =  defualtWFlagFile.replace(/ /g,''); // we dont want white
+          defualtWFlagFile = defualtWFlagFile.replace(/ /g, ''); // we dont want white
         }
-      } 
-
+      }
     }
-    if (!options.n && match) {
+    if (!options.n) {
       console.log(patternSpace); // we print every time....but we save once
       stringPipe += patternSpace + '\n';
     }
     if (printDemand && match) {
-      console.log(patternSpace);// we print every time....but we save once
+      console.log(patternSpace); // we print every time....but we save once
       stringPipe += patternSpace + '\n';
     }
   });
 
   lineReader.on('close', () => {
-    if(writeToFile) fileMngr.writeToFile(defualtWFlagFile, stringPipe);
+    if (writeToFile) fileMngr.writeToFile(defualtWFlagFile, stringPipe);
     if (options.i) fileMngr.inPlace(file, backUpFile, stringPipe);
   });
 }

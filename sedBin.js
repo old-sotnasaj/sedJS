@@ -11,12 +11,11 @@ const argv = yargs
   .options({
     expression: {
       describe: 'Regex to be executed',
-      array: false,
+      array: true,
       alias: 'e',
       demandOption: false,
       nargs: 1,
       type: 'string',
-      conflicts: 'f',
     },
     silent: {
       describe: 'Flush the output of the match',
@@ -42,22 +41,19 @@ const argv = yargs
       alias: 'f',
       demandCommand: false,
       type: 'string',
-      conflicts: 'e',
     },
   })
-  .command('$0 <regex> <path>', '***IMPORTANTE , -f <archivo> overrides typed commands', (yargs) => {
-    yargs
-      .positional('regex', {
-        describe: 'Regular expression to evaluate',
-        type: 'string',
-        array: false
-      })
-      .positional('path', {
+  .command(
+    '$0 <path>',
+    '***IMPORTANTE , -f <archivo> overrides typed commands',
+    (yargs) => {
+      yargs.positional('path', {
         describe: 'File to be processed',
         type: 'string',
         array: false,
       });
-  })
+    }
+  )
   .check((yargs) => {
     if (fileVal.checkReadExist(yargs.path)) {
       return true;
@@ -82,34 +78,38 @@ let flags = {
   n: argv.silent,
   i: argv.inPlace,
   e: argv.expression,
-  f: argv.file
-}
+  f: argv.file,
+};
 
 // By now whe send the [] ready, it is suposed to change
 // Executed when -f , meaning that a file with commands is provided
 // Also the first positional argument is overrided but required(*Behaviour to be fix)
 if (argv.file !== undefined) {
-  let commandsFF = [];
+  let commandsF= [];
   let lineReader = rl.createInterface({
     input: fs.createReadStream(argv.f),
   });
   lineReader.on('line', function (line) {
-    commandsFF.push(line.toString());
+    commandsF.push(line.toString());
   });
   lineReader.on('close', () => {
-    cmd.executeExpression(commandsFF, argv.path,flags);
+    if (argv.expression !== undefined) {
+      cmd.executeExpression([...commandsF, ...argv.e], argv.path, flags);
+    } else {
+      cmd.executeExpression(commandsF, argv.path, flags);
+    }
   });
-} 
+}
 // Executed when -e argument is provided (or multiple)
 // Also the first positional argument is overrided but required (*Behaviour to be fix)
-  else if (argv.expression !== undefined) {
-  let arrayRegex = [...argv.e];
-  cmd.executeExpression(arrayRegex, argv.path, flags);
-} 
+else if (argv.expression !== undefined) {
+  cmd.executeExpression(argv.e, argv.path, flags);
+}
 
-// if both a and b are not provided, 
-  else {
-  let arrayRegex = [argv.regex];
-  cmd.executeExpression(arrayRegex, argv.path, flags);
-}   
-
+// if both a and b are not provided,
+else {
+  console.log(
+    'At least one -e command or a file with commands should be provided'
+  );
+  process.exit();
+}
